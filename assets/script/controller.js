@@ -1,81 +1,44 @@
-'use strict';
+var _0x75cd=["\x41\x49\x7A\x61\x53\x79\x41\x4D\x45\x4A\x66\x71\x4F\x4B\x75\x67\x6F\x4D\x32\x59\x67\x59\x49\x61\x45\x69\x7A\x38\x61\x53\x65\x45\x30\x5F\x4C\x6C\x74\x4D\x51","\x74\x61\x6C\x6B\x2D\x69\x6E\x2D\x74\x65\x72\x6D\x69\x6E\x61\x6C\x2E\x66\x69\x72\x65\x62\x61\x73\x65\x61\x70\x70\x2E\x63\x6F\x6D","\x68\x74\x74\x70\x73\x3A\x2F\x2F\x74\x61\x6C\x6B\x2D\x69\x6E\x2D\x74\x65\x72\x6D\x69\x6E\x61\x6C\x2E\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6F\x2E\x63\x6F\x6D","\x74\x61\x6C\x6B\x2D\x69\x6E\x2D\x74\x65\x72\x6D\x69\x6E\x61\x6C","\x74\x61\x6C\x6B\x2D\x69\x6E\x2D\x74\x65\x72\x6D\x69\x6E\x61\x6C\x2E\x61\x70\x70\x73\x70\x6F\x74\x2E\x63\x6F\x6D","\x34\x38\x31\x35\x31\x32\x39\x30\x37\x33\x36\x34","\x69\x6E\x69\x74\x69\x61\x6C\x69\x7A\x65\x41\x70\x70","\x61\x70\x70","\x66\x69\x72\x65\x62\x61\x73\x65","\x6D\x6F\x64\x75\x6C\x65"];var _0x925f=[_0x75cd[0],_0x75cd[1],_0x75cd[2],_0x75cd[3],_0x75cd[4],_0x75cd[5],_0x75cd[6]];firebase[_0x925f[6]]({apiKey:_0x925f[0],authDomain:_0x925f[1],databaseURL:_0x925f[2],projectId:_0x925f[3],storageBucket:_0x925f[4],messagingSenderId:_0x925f[5]});var app=angular[_0x75cd[9]](_0x75cd[7],[_0x75cd[8]])
+app.config(['$compileProvider', function($compileProvider) {
+    $compileProvider.debugInfoEnabled(false);
+}]);
 
 app.controller('controller', function (
-    API, $timeout,
     $scope, $firebaseArray,
-    $http, Notify) {
+    $timeout, Notify) {
 
     var db              = firebase.database();
-    $scope.waiting      = $firebaseArray(db.ref('waiting/'));
+    $scope.orders       = $firebaseArray(db.ref('slimSale/'));
     $scope.show_loading = false;
-    $scope.user         = {};
+    $scope.user         = {quantity:1};
     $scope.lend         = {};
     $scope.tableLend    = [];
 
-    $scope.typeReceive  = [
-        { id: 1, name: 'Chuyển khoản qua ngân hàng' },
-        { id: 2, name: 'Nhận tiền mặt' }
-    ];
-    
-    $scope.address  = [
-        { id: "TP Hồ Chí Minh", name: "TP Hồ Chí Minh" },
-        { id: "Hà Nội", name: "Hà Nội" },
-        { id: "Bình Dương", name: "Bình Dương" },
-    ];
-
     $scope.register = function()
     {
-        // if (! $scope.user.fullname || ! $scope.user.phone || ! $scope.user.address || ! $scope.user.salary || ! $scope.user.typeReceive) {
-        if (! $scope.user.fullname || ! $scope.user.phone || ! $scope.user.address) {
-            return Notify.error('Vui lòng nhập đầy đủ các thông tin bên dưới.');
+        if (! $scope.user.fullname || ! $scope.user.phone || ! $scope.user.address || ! $scope.user.quantity) {
+            return Notify.error('Vui lòng nhập đầy đủ các thông tin thanh toán');
         }
         $scope.user.called = false;
         $scope.user.date   = now();
         loading.show();
-        $scope.waiting.$add($scope.user);
+        $scope.orders.$add($scope.user);
         loading.hide();
-        Notify.success('Đăng ký nhận tư vấn thành công, chúng tôi sẽ liên hệ sau ít phút.');
+        Notify.success('Đặt hàng thành công, vui lòng chờ đợi xác nhận đơn hàng');
         $scope.user = {};
     };
 
     $scope.updateStatus = function(id)
     {
-        var index                    = indexOfArr(id);
-        $scope.waiting[index].called = $scope.waiting[index].called ? false : true;
-        $scope.waiting.$save(index);
-    };
-
-    $scope.calculate = function()
-    {
-        $scope.tableLend  = [];
-        var totalMoney    = $scope.lend.totalMoney;
-        var goc_moi_thang = Math.round(totalMoney / $scope.lend.totalMonth);
-        var lai_moi_thang = Math.round(totalMoney * ($scope.lend.percent / 100) / $scope.lend.totalMonth);
-        totalMoney        = totalMoney - goc_moi_thang;
-
-        $scope.tableLend.push({
-            ky: 'Kỳ thứ 1',
-            goc: goc_moi_thang,
-            lai: lai_moi_thang,
-            tong: goc_moi_thang + lai_moi_thang
-        });
-
-        for (var i = 2; i <= $scope.lend.totalMonth; i++) {
-            lai_moi_thang = Math.round(totalMoney * ($scope.lend.percent / 100) / $scope.lend.totalMonth);
-            $scope.tableLend.push({
-                ky: 'Kỳ thứ ' + i,
-                goc: goc_moi_thang,
-                lai: lai_moi_thang,
-                tong: goc_moi_thang + lai_moi_thang
-            });
-            totalMoney = totalMoney - goc_moi_thang;
-        }
+        var index                   = indexOfArr(id);
+        $scope.orders[index].called = $scope.orders[index].called ? false : true;
+        $scope.orders.$save(index);
     };
 
     function indexOfArr(id)
     {
         var result = null;
-        angular.forEach($scope.waiting, function(value, key) {
+        angular.forEach($scope.orders, function(value, key) {
             if (value.$id === id) {
                 return result = key;
             }
@@ -104,5 +67,33 @@ app.controller('controller', function (
             }, 1000);
         }
     };
+
+    function gup( name, url ) {
+        if (!url) url = location.href;
+        name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+        var regexS = "[\\?&]"+name+"=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var results = regex.exec( url );
+        return results == null ? null : results[1];
+    }
+
+    $scope.p = gup('p');
+    switch (gup('p')) {
+        case '1':
+            $scope.product = 'Trà giảm cân thảo mộc Slimming Tea';
+            break;
+        case '2':
+            $scope.product = 'Viên Giảm Cân Slimming Plus';
+            break;
+        case '3':
+            $scope.product = 'Bộ giảm mỡ - Mờ rạn Slimming Day Collagen thế hệ mới';
+            break;
+        case '4':
+            $scope.product = 'Bộ ủ nóng tan mỡ săn da Slimming Body';
+            break;
+        default:
+            window.location.href = '/';
+            break;
+    }
 
 });

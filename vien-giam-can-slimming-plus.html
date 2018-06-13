@@ -134,7 +134,8 @@
                                 </div>
                             </div>
                             <div class="content">
-                                <button type="button" class="btn btn-warning btn-fill btn-wd btn-hotline">Liên hệ đặt hàng 0981.805.006</button>
+                                <button type="button" class="btn btn-success btn-fill btn-wd btn-hotline" onclick="window.location.href='/dat-hang.html?p=2'">Đặt hàng online</button>
+                                <button type="button" class="btn btn-warning btn-fill btn-wd btn-hotline btn-call">Gọi đặt hàng 0981.805.006</button>
                             </div>
                         </div>
                     </div>
@@ -258,7 +259,7 @@
         $('.carousel').carousel({
             interval: false
         });
-        var hotline = document.querySelector('.btn-hotline');
+        var hotline = document.querySelector('.btn-call');
         hotline.onclick = function() {
             window.location.href = 'tel:0981805006';
         }
