@@ -19,8 +19,10 @@ app.controller('controller', function (
         if (! $scope.user.fullname || ! $scope.user.phone || ! $scope.user.address || ! $scope.user.quantity) {
             return Notify.error('Vui lòng nhập đầy đủ các thông tin thanh toán');
         }
-        $scope.user.called = false;
-        $scope.user.date   = now();
+        $scope.user.called  = false;
+        $scope.user.date    = now();
+        $scope.user.product = $scope.product;
+
         loading.show();
         $scope.orders.$add($scope.user);
         loading.hide();
