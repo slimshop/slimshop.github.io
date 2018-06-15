@@ -337,6 +337,21 @@
 
         autoHeight('.heightLine-group1');
         autoHeight('.heightLine-group2');
+
+        if(document.readyState === 'complete') {
+            autoHeight('.heightLine-group1');
+            autoHeight('.heightLine-group2');
+        }
+
+        var resizeTimer;
+        $(window).on('resize', function(e) {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                console.log('done');
+                autoHeight('.heightLine-group1');
+                autoHeight('.heightLine-group2');
+            }, 250);
+        });
     </script>
 
 </html>
